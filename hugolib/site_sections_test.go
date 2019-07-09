@@ -412,7 +412,9 @@ title: %q
 
 	b.WithContent("en/sect1/sect2/_index.md", createPage("en: Sect 2"))
 	b.WithContent("en/sect1/sect2/page.md", createPage("en: Page"))
+	b.WithContent("en/sect1/sect2/data.json", "mydata")
 	b.WithContent("nn/sect1/sect2/page.md", createPage("nn: Page"))
+	b.WithContent("nn/sect1/sect2/data.json", "my nn data")
 
 	b.Build(BuildCfg{})
 

@@ -306,7 +306,7 @@ func (c *pagesCollector) getLang(fi hugofs.FileMetaInfo) string {
 	return c.sp.DefaultContentLanguage
 }
 
-func (c *pagesCollector) addToBundle(info hugofs.FileMetaInfo, bundles pageBundles) {
+func (c *pagesCollector) addToBundle(info hugofs.FileMetaInfo, btyp bundleDirType, bundles pageBundles) error {
 	getBundle := func(lang string) *fileinfoBundle {
 		return bundles[lang]
 	}
@@ -349,6 +349,12 @@ func (c *pagesCollector) addToBundle(info hugofs.FileMetaInfo, bundles pageBundl
 			bundle = &fileinfoBundle{header: info}
 			bundles[lang] = bundle
 		} else {
+			if btyp == bundleBranch {
+				// No special logic for branch bundles.
+				// Every language needs its own _index.md file.
+				return c.handleFiles(info)
+			}
+
 			bundle = cloneBundle(lang)
 			bundles[lang] = bundle
 		}
@@ -371,6 +377,8 @@ func (c *pagesCollector) addToBundle(info hugofs.FileMetaInfo, bundles pageBundl
 			}
 		}
 	}
+
+	return nil
 }
 
 func (c *pagesCollector) cloneFileInfo(fi hugofs.FileMetaInfo) hugofs.FileMetaInfo {
@@ -405,7 +413,9 @@ func (c *pagesCollector) handleBundleBranch(readdir []hugofs.FileMetaInfo) error
 				return err
 			}
 		default:
-			c.addToBundle(fim, bundles)
+			if err := c.addToBundle(fim, bundleBranch, bundles); err != nil {
+				return err
+			}
 		}
 
 	}
@@ -426,9 +436,8 @@ func (c *pagesCollector) handleBundleLeaf(dir hugofs.FileMetaInfo, path string, 
 			return nil
 		}
 
-		c.addToBundle(info, bundles)
+		return c.addToBundle(info, bundleLeaf, bundles)
 
-		return nil
 	}
 
 	// Start a new walker from the given path.
