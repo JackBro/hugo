@@ -73,6 +73,17 @@ type fileinfoBundle struct {
 	resources []hugofs.FileMetaInfo
 }
 
+func (b *fileinfoBundle) containsResource(name string) bool {
+	for _, r := range b.resources {
+		if r.Name() == name {
+			return true
+		}
+	}
+
+	return false
+
+}
+
 type pageBundles map[string]*fileinfoBundle
 
 type pagesCollector struct {
@@ -370,7 +381,7 @@ func (c *pagesCollector) addToBundle(info hugofs.FileMetaInfo, btyp bundleDirTyp
 		translations := info.Meta().Translations()
 		if len(translations) < len(bundles) {
 			for lang, b := range bundles {
-				if !stringSliceContains(lang, translations...) {
+				if !stringSliceContains(lang, translations...) && !b.containsResource(info.Name()) {
 					// Clone and add it to the bundle.
 					clone := c.cloneFileInfo(info)
 					clone.Meta()["lang"] = lang

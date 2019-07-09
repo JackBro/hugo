@@ -977,16 +977,16 @@ defaultContentLanguageInSubdir = true
 
 [Languages]
 [Languages.en]
-weight = 10
+weight = 99999
 contentDir = "content/en"
 [Languages.nn]
 weight = 20
 contentDir = "content/nn"
 [Languages.sv]
-weight = 20
+weight = 30
 contentDir = "content/sv"
 [Languages.nb]
-weight = 30
+weight = 40
 contentDir = "content/nb"
 
 `
@@ -1007,9 +1007,9 @@ title: %q
 
 	b.WithContent("en/sect1/sect2/_index.md", createPage("en: Sect 2"))
 	b.WithContent("en/sect1/sect2/page.md", createPage("en: Page"))
-	b.WithContent("en/sect1/sect2/data.json", "mydata")
+	b.WithContent("en/sect1/sect2/data-branch.json", "mydata")
 	b.WithContent("nn/sect1/sect2/page.md", createPage("nn: Page"))
-	b.WithContent("nn/sect1/sect2/data.json", "my nn data")
+	b.WithContent("nn/sect1/sect2/data-branch.json", "my nn data")
 
 	// Leaf
 
@@ -1018,8 +1018,10 @@ title: %q
 	b.WithContent("sv/b1/index.md", createPage("sv: leaf"))
 	b.WithContent("nb/b1/index.md", createPage("nb: leaf"))
 
-	b.WithContent("en/b1/data.json", createPage("en: data"))
-	b.WithContent("sv/b1/data.json", createPage("sv: data"))
+	b.WithContent("en/b1/data1.json", "en: data")
+	b.WithContent("sv/b1/data1.json", "sv: data")
+	b.WithContent("sv/b1/data2.json", "sv: data2")
+	b.WithContent("nb/b1/data2.json", "nb: data2")
 
 	b.Build(BuildCfg{})
 
@@ -1027,7 +1029,7 @@ title: %q
 	b.AssertFileContent("public/nn/index.html", "page|sect1/sect2/page.md|CurrentSection: sect1")
 
 	// Check order of inherited data file
-	b.AssertFileContent("public/nb/b1/data.json", "nb?")
-	b.AssertFileContent("public/nn/b1/data.json", "asdf")
+	b.AssertFileContent("public/nb/b1/data1.json", "en: data") // Default content
+	b.AssertFileContent("public/nn/b1/data2.json", "sv: data") // First match
 
 }

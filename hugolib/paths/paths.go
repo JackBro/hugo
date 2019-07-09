@@ -63,8 +63,9 @@ type Paths struct {
 	UglyURLs           bool
 	CanonifyURLs       bool
 
-	Language  *langs.Language
-	Languages langs.Languages
+	Language              *langs.Language
+	Languages             langs.Languages
+	LanguagesDefaultFirst langs.Languages
 
 	// The PathSpec looks up its config settings in both the current language
 	// and then in the global Viper config.
@@ -99,8 +100,9 @@ func New(fs *hugofs.Fs, cfg config.Provider) (*Paths, error) {
 	defaultContentLanguage := cfg.GetString("defaultContentLanguage")
 
 	var (
-		language  *langs.Language
-		languages langs.Languages
+		language              *langs.Language
+		languages             langs.Languages
+		languagesDefaultFirst langs.Languages
 	)
 
 	if l, ok := cfg.(*langs.Language); ok {
@@ -111,6 +113,12 @@ func New(fs *hugofs.Fs, cfg config.Provider) (*Paths, error) {
 	if l, ok := cfg.Get("languagesSorted").(langs.Languages); ok {
 		languages = l
 	}
+
+	if l, ok := cfg.Get("languagesSortedDefaultFirst").(langs.Languages); ok {
+		languagesDefaultFirst = l
+	}
+
+	//
 
 	if len(languages) == 0 {
 		// We have some old tests that does not test the entire chain, hence
@@ -164,6 +172,7 @@ func New(fs *hugofs.Fs, cfg config.Provider) (*Paths, error) {
 
 		Language:                 language,
 		Languages:                languages,
+		LanguagesDefaultFirst:    languagesDefaultFirst,
 		MultihostTargetBasePaths: multihostTargetBasePaths,
 
 		PaginatePath: cfg.GetString("paginatePath"),

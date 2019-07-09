@@ -34,7 +34,7 @@ var (
 	_ afero.File    = (*filterDir)(nil)
 )
 
-func NewLanguageFs(langs map[string]bool, fs afero.Fs) (afero.Fs, error) {
+func NewLanguageFs(langs map[string]int, fs afero.Fs) (afero.Fs, error) {
 
 	applyMeta := func(fs *FilterFs, name string, fis []os.FileInfo) {
 
@@ -63,6 +63,7 @@ func NewLanguageFs(langs map[string]bool, fs afero.Fs) (afero.Fs, error) {
 			fim := NewFileMetaInfo(fi, FileMeta{
 				metaKeyLang:                       lang,
 				metaKeyWeight:                     weight,
+				metaKeyOrdinal:                    langs[lang],
 				metaKeyTranslationBaseName:        translationBaseName,
 				metaKeyTranslationBaseNameWithExt: translationBaseNameWithExt,
 				metaKeyClassifier:                 files.ClassifyContentFile(fi.Name()),
@@ -285,7 +286,7 @@ func (f *filterDir) Readdirnames(count int) ([]string, error) {
 // Try to extract the language from the given filename.
 // Any valid language identificator in the name will win over the
 // language set on the file system, e.g. "mypost.en.md".
-func langInfoFrom(languages map[string]bool, name string) (string, string, string) {
+func langInfoFrom(languages map[string]int, name string) (string, string, string) {
 	var lang string
 
 	baseName := filepath.Base(name)
@@ -299,7 +300,7 @@ func langInfoFrom(languages map[string]bool, name string) (string, string, strin
 	fileLangExt := filepath.Ext(translationBaseName)
 	fileLang := strings.TrimPrefix(fileLangExt, ".")
 
-	if languages[fileLang] {
+	if _, found := languages[fileLang]; found {
 		lang = fileLang
 		translationBaseName = strings.TrimSuffix(translationBaseName, fileLangExt)
 	}

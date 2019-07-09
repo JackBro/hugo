@@ -39,6 +39,7 @@ const (
 	metaKeyPathWalk                   = "pathWalk"
 	metaKeyLang                       = "lang"
 	metaKeyWeight                     = "weight"
+	metaKeyOrdinal                    = "ordinal"
 	metaKeyFs                         = "fs"
 	metaKeyOpener                     = "opener"
 	metaKeyIsOrdered                  = "isOrdered"
@@ -111,6 +112,10 @@ func (f FileMeta) Path() string {
 
 func (f FileMeta) Weight() int {
 	return f.GetInt(metaKeyWeight)
+}
+
+func (f FileMeta) Ordinal() int {
+	return f.GetInt(metaKeyOrdinal)
 }
 
 func (f FileMeta) IsOrdered() bool {

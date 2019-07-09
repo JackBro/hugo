@@ -396,7 +396,7 @@ func (b *sourceFilesystemsBuilder) Build() (*SourceFilesystems, error) {
 	contentDirs := b.theBigFs.overlayDirs[files.ComponentFolderContent]
 	contentBfs := afero.NewBasePathFs(b.theBigFs.overlayMountsContent, files.ComponentFolderContent)
 
-	contentFs, err := hugofs.NewLanguageFs(b.p.Languages.AsSet(), contentBfs)
+	contentFs, err := hugofs.NewLanguageFs(b.p.LanguagesDefaultFirst.AsOrdinalSet(), contentBfs)
 	if err != nil {
 		return nil, errors.Wrap(err, "create content filesystem")
 	}

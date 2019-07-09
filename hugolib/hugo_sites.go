@@ -200,10 +200,11 @@ func (h *HugoSites) IsMultihost() bool {
 	return h != nil && h.multihost
 }
 
-func (h *HugoSites) LanguageSet() map[string]bool {
-	set := make(map[string]bool)
-	for _, s := range h.Sites {
-		set[s.language.Lang] = true
+// TODO(bep) mod default content first
+func (h *HugoSites) LanguageSet() map[string]int {
+	set := make(map[string]int)
+	for i, s := range h.Sites {
+		set[s.language.Lang] = i
 	}
 	return set
 }
