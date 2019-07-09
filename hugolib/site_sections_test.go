@@ -376,3 +376,47 @@ Next: {{ with .NextInSection }}{{ .RelPermalink }}{{ end }}|
 		"Prev: |", "Next: /blog/cool/cool1/|")
 
 }
+
+func TestSectionsMultilingualBranchBundle(t *testing.T) {
+	config := `
+baseURL = "https://example.com"
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = true
+
+[Languages]
+[Languages.en]
+weight = 10
+contentDir = "content/en"
+[Languages.nn]
+weight = 20
+contentDir = "content/nn"
+[Languages.sv]
+weight = 20
+contentDir = "content/sv"
+
+`
+
+	const pageContent = `---
+title: %q
+---
+`
+	createPage := func(s string) string {
+		return fmt.Sprintf(pageContent, s)
+	}
+
+	b := newTestSitesBuilder(t).WithConfigFile("toml", config)
+
+	b.WithTemplates("index.html", `{{ range .Site.Pages }}
+{{ .Kind }}|{{ .Path }}|{{ with .CurrentSection }}CurrentSection: {{ .Path }}{{ end }}{{ end }}
+`)
+
+	b.WithContent("en/sect1/sect2/_index.md", createPage("en: Sect 2"))
+	b.WithContent("en/sect1/sect2/page.md", createPage("en: Page"))
+	b.WithContent("nn/sect1/sect2/page.md", createPage("nn: Page"))
+
+	b.Build(BuildCfg{})
+
+	b.AssertFileContent("public/en/index.html", "section|sect1/sect2/_index.md|CurrentSection: sect1/sect2/_index.md")
+	b.AssertFileContent("public/nn/index.html", "page|sect1/sect2/page.md|CurrentSection: sect1")
+
+}
