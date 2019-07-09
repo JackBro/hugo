@@ -311,6 +311,8 @@ func (c *pagesCollector) addToBundle(info hugofs.FileMetaInfo, btyp bundleDirTyp
 		return bundles[lang]
 	}
 
+	// TODO(bep) mod check headless kub template
+
 	cloneBundle := func(lang string) *fileinfoBundle {
 		// Every bundled file needs a content file header.
 		// Use the default content language if found, else just
