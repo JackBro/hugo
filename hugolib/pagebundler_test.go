@@ -1025,8 +1025,8 @@ title: %q
 
 	b.Build(BuildCfg{})
 
-	b.AssertFileContent("public/en/index.html", "section|sect1/sect2/_index.md|CurrentSection: sect1/sect2/_index.md")
-	b.AssertFileContent("public/nn/index.html", "page|sect1/sect2/page.md|CurrentSection: sect1")
+	b.AssertFileContent("public/en/index.html", filepath.FromSlash("section|sect1/sect2/_index.md|CurrentSection: sect1/sect2/_index.md"))
+	b.AssertFileContent("public/nn/index.html", filepath.FromSlash("page|sect1/sect2/page.md|CurrentSection: sect1"))
 
 	// Check order of inherited data file
 	b.AssertFileContent("public/nb/b1/data1.json", "en: data") // Default content
